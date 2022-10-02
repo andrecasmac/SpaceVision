@@ -63,7 +63,7 @@
     (async () => {
       "use strict";
       try {
-        const resource = await Cesium.IonResource.fromAssetId(1339933);
+        const resource = await Cesium.IonResource.fromAssetId(1341048);
         const entity = viewer.entities.add({
           position: positionsOverTime,
           orientation: orientation,
@@ -74,27 +74,26 @@
             width: 3,
             material: Cesium.Color.RED,
             trailTime: 0,
-            leadTime: 17000,
-            show: true
+            leadTime: 15000,
+            show: false
           }
         });
         viewer.trackedEntity = entity;
+
+        // Wait for globe to load then display trajectory     
+        let initialized = false;
+        
+        viewer.scene.globe.tileLoadProgressEvent.addEventListener(() => {
+          if (!initialized && viewer.scene.globe.tilesLoaded === true) {
+            viewer.clock.shouldAnimate = true;
+            initialized = true;
+            entity.path.show = true;
+          }
+        });
       } catch (error) {
         console.log(error);
       }
     })();
-
-    // Wait for globe to load then zoom out     
-    let initialized = false;
-    
-    viewer.scene.globe.tileLoadProgressEvent.addEventListener(() => {
-      if (!initialized && viewer.scene.globe.tilesLoaded === true) {
-        viewer.clock.shouldAnimate = true;
-        initialized = true;
-        viewer.scene.camera.zoomOut(12000000);
-        // viewer.scene.camera.zoomOut(10_000_000);
-      }
-    });
     
   </script>
 </body>
